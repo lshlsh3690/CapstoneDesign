@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>산학캡스톤디자인</title>
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){//문서의 구조가 완성되면 실행됨
+        });
+
+         function ajaxMoterOnOff(value) {
+            if (value == "1") var value = "on";
+            $.ajax({
+                url: "http://192.168.55.175:3000/devices/moter",
+                type: "post",
+                data : {"flag": value},
+                error : function(request,status,error){
+                    alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                }
+            });
+        };
+        
+        /*var videoEl = document.getElementById("webcam");
+        var startWebcam = () =>{
+        if(navigator.mediaDevices.getUserMedia){
+            navigator.mediaDevices.getUserMedia({video : true})
+            .then((stream) => {
+                videoEl.srcObject = stream;
+            })
+            .catch((err) =>{
+                console.log("카메라를 가져오지 못했어요.");
+                });
+            }
+         };*/
+
+    </script>
+
+</head>
+<body>
+    <div><video id="webcam" autoplay="true" src="http://192.168.55.162:81/stream"></video></div>
+<button onclick="ajaxMoterOnOff(1)">Moter_ON</button>
+</body>
+</html>

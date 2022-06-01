@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="org.techtown.cap3.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_gallery"
+        android:name="org.techtown.cap3.ui.gallery.GalleryFragment"
+        android:label="@string/menu_gallery"
+        tools:layout="@layout/fragment_gallery" />
+
+    <fragment
+        android:id="@+id/nav_remote"
+        android:name="org.techtown.cap3.ui.remote.RemoteFragment"
+        android:label="@string/menu_remote"
+        tools:layout="@layout/fragment_remote" />
+
+    <fragment
+        android:id="@+id/nav_init"
+        android:label="@string/menu_init"
+        android:name="org.techtown.cap3.ui.init.InitFragment"
+        tools:layout="@layout/fragment_init"/>
+
+</navigation>
