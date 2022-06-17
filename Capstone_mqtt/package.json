@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.1",
-    "mqtt": "^4.3.7"
+    "mqtt": "^4.3.7",
+    "node-rtsp-stream": "^0.0.9"
   }
 }

@@ -7,10 +7,11 @@
     <title>산학캡스톤디자인</title>
     <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script type="text/javascript">
+        
         $(document).ready(function(){//문서의 구조가 완성되면 실행됨
-        });
 
-         function ajaxMoterOnOff(value) {
+        });
+        function ajaxMoterOnOff(value) {
             if (value == "1") var value = "on";
             $.ajax({
                 url: "http://192.168.55.175:3000/devices/moter",
@@ -21,25 +22,31 @@
                 }
             });
         };
-        
-        /*var videoEl = document.getElementById("webcam");
-        var startWebcam = () =>{
-        if(navigator.mediaDevices.getUserMedia){
-            navigator.mediaDevices.getUserMedia({video : true})
-            .then((stream) => {
-                videoEl.srcObject = stream;
-            })
-            .catch((err) =>{
-                console.log("카메라를 가져오지 못했어요.");
-                });
-            }
-         };*/
 
+        $(function() {
+            timer = setInterval( function () {
+            $.ajax({
+                url: "http://192.168.55.175:3000/img",
+                type: "get",
+                context : this,
+                cache : false,
+                error : function(request,status,error){
+                    console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                },
+                success:function(obj){
+                    $("#imguri").html('<img src="'+obj.data+'">');
+                    $("#imguri").attr("src", obj.data);
+                    console.log(obj.data);
+
+                }
+            });
+            }, 3000);
+        });
     </script>
 
 </head>
 <body>
-    <div><video id="webcam" autoplay="true" src="http://192.168.55.162:81/stream"></video></div>
-<button onclick="ajaxMoterOnOff(1)">Moter_ON</button>
+    <div id="imguri"></div>
+    <!--<button onclick="ajaxMoterOnOff(1)">Moter_ON</button>-->
 </body>
 </html>
