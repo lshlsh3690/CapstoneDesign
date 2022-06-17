@@ -4,6 +4,13 @@ const express = require("express");                 //express 객체란
 const app = express();
 const http = require("http");
 
+const TeachableMachine = require("@sashido/teachablemachine-node");
+
+const model = new TeachableMachine({
+  modelUrl: "https://teachablemachine.withgoogle.com/models/tXspLR78v/"
+});
+  
+
 const exp = require("constants");                   //???
 
 const devicesRouter = require("./routes/devices");
@@ -38,15 +45,15 @@ client.on("message", async(topic, message)=>{ // {"LED" : "ON"} or {"MOTER" : "O
     if(topic == "JPG")
     {
         obj = message.toString();
-        app.get("/img", function(req,res,next){
+        /*app.get("/img", function(req,res,next){
             res.set("content-Type", "text/json");
             //res.send(JSON.stringify({data : obj}));
             res.json({
                 data: obj || "no image yet"
             });
-            console.log(obj);//number 1 print
-        });
-        console.log(obj);//number 2 print
+            //console.log(obj);//number 1 print
+        });*/
+        //console.log(obj);//number 2 print
     }
     else{
         obj = JSON.parse(message);  //뒤의 메세지만 parse 함수로 추출함
@@ -59,6 +66,27 @@ client.on("message", async(topic, message)=>{ // {"LED" : "ON"} or {"MOTER" : "O
     var seconds = date.getSeconds();
     obj.created_at = new Date(Date.UTC(year, month, today, hours, minutes, seconds));*/
 });
+
+var predictions = null;
+app.get("/img", function(req,res,next){
+    res.set("content-Type", "text/json");
+    /*res.json({
+      data: obj || "no image yet"
+    });*/
+    model.classify({
+        imageUrl: obj,
+      }).then((predictions) => {
+        console.log("Predictions:", predictions);
+        res.json({
+            data : obj , predict : predictions || "no data yet"
+        });
+      }).catch((e) => {
+        console.log("ERROR", e);
+      });
+    
+    //console.log(obj);//number 1
+});
+
 
 app.set("port", "3000");                    //포트 지정
 var server = http.createServer(app);        //서버염

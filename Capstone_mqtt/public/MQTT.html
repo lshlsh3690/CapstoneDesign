@@ -36,17 +36,35 @@
                 success:function(obj){
                     $("#imguri").html('<img src="'+obj.data+'">');
                     $("#imguri").attr("src", obj.data);
-                    console.log(obj.data);
-
+                    //console.log(obj.data);
+                    console.log(obj.predict[0]);
+                    if(obj.predict[0]['class'] == 'RED'){
+                        document.getElementById('red_predict').innerHTML = 'RED : '+ obj.predict[0]['score'];
+                        if(obj.predict[1]['class'] == 'YELLOW'){
+                            document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[1]['score'];
+                        }
+                    }
+                    else if(obj.predict[0]['class'] == 'YELLOW'){
+                        document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[0]['score'];
+                        if(obj.predict[1]['class'] == 'RED'){
+                            document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[1]['score'];
+                        }
+                    }
+                    
                 }
             });
             }, 3000);
         });
+
+        
+    
     </script>
 
 </head>
 <body>
     <div id="imguri"></div>
+    <p id="red_predict">RED</p>
+    <p id="yellow_predict">YELLOW</p>
     <!--<button onclick="ajaxMoterOnOff(1)">Moter_ON</button>-->
 </body>
 </html>
