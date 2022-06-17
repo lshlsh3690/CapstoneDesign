@@ -13,9 +13,12 @@ https://www.arduino.cc/reference/en/libraries/pubsubclient/
 #include "soc/rtc_cntl_reg.h"
 #include "esp_camera.h"
 #include "Base64.h"
+#include "BluetoothSerial.h"
 
-const char* ssid = "SK_WiFiGIGABE57";
-const char* password = "1704047740";
+BluetoothSerial SerialBT;
+
+const char* ssid = "";
+const char* password = "";
 
 // ws://broker.emqx.io:8083/mqtt  (MQTT.js)
 // wss://broker.emqx.io:8084/mqtt  (MQTT.js)
@@ -45,12 +48,22 @@ PubSubClient client(espClient);
 #define VSYNC_GPIO_NUM    25
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
-
+#define LED                4
 
 void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
-    
+  
+  pinMode(LED, OUTPUT);
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  
+
+   for (int i = 0; i < 2; i++){
+    digitalWrite(LED, HIGH);
+    delay(20);
+    digitalWrite(LED, LOW);
+    delay(500);
+  }
   Serial.begin(115200);
+  SerialBT.begin("ESP32test");
+  
   randomSeed(micros());
 
   initCamera();
@@ -64,7 +77,9 @@ void loop() {
   if (!client.connected()) {
     reconnect();
   }
+  
   sendImage();
+  delay(3000);
   client.loop();
 }
 
@@ -160,6 +175,28 @@ void initCamera() {
 }
 
 void initWiFi() {
+  String Sid, Spw;
+  while(true){
+    if(SerialBT.available()){
+      Sid = SerialBT.readStringUntil('\n');
+      Spw = SerialBT.readStringUntil('\n');
+      if(Sid.length() > 0 && Spw.length() > 0 )
+      {
+        ssid = Sid.c_str();
+        password = Spw.c_str();
+        Serial.println();
+        Serial.print("SSID : ");
+        Serial.println(ssid);
+        Serial.print("password : ");
+        Serial.println(password);
+        break;
+      }
+    }
+    Serial.print(".");
+    delay(1000);
+  }  
+  Serial.println();
+  delay(10);
   WiFi.mode(WIFI_STA);
   
   for (int i=0;i<2;i++) {
@@ -169,7 +206,7 @@ void initWiFi() {
     Serial.println("");
     Serial.print("Connecting to ");
     Serial.println(ssid);
-    
+
     long int StartTime=millis();
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
