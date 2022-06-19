@@ -22,7 +22,7 @@ const char* password = "";
 
 // ws://broker.emqx.io:8083/mqtt  (MQTT.js)
 // wss://broker.emqx.io:8084/mqtt  (MQTT.js)
-const char* mqtt_server = "192.168.55.175";
+const char* mqtt_server = "your external server ip";
 const unsigned int mqtt_port = 1883;
 #define MQTT_USER               ""
 #define MQTT_PASSWORD           ""

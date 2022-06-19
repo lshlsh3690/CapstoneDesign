@@ -14,7 +14,7 @@
         function ajaxMoterOnOff(value) {
             if (value == "1") var value = "on";
             $.ajax({
-                url: "http://192.168.55.175:3000/devices/moter",
+                url: "http://server ip:3000/devices/moter",
                 type: "post",
                 data : {"flag": value},
                 error : function(request,status,error){
@@ -26,7 +26,7 @@
         $(function() {
             timer = setInterval( function () {
             $.ajax({
-                url: "http://192.168.55.175:3000/img",
+                url: "http://external ip:3000/img",
                 type: "get",
                 context : this,
                 cache : false,
@@ -34,20 +34,151 @@
                     console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
                 },
                 success:function(obj){
+                    //update image every 3 seconds!!
                     $("#imguri").html('<img src="'+obj.data+'">');
                     $("#imguri").attr("src", obj.data);
-                    //console.log(obj.data);
-                    console.log(obj.predict[0]);
-                    if(obj.predict[0]['class'] == 'RED'){
+                    
+                    //update text every 3 seconds!!
+                    console.log(obj.predict);
+                    
+                    //RED
+                    if(obj.predict[0]['class'] == 'RED'){// RED 1
                         document.getElementById('red_predict').innerHTML = 'RED : '+ obj.predict[0]['score'];
                         if(obj.predict[1]['class'] == 'YELLOW'){
                             document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[1]['score'];
+                            if(obj.predict[2]['class'] == 'GREEN'){
+                                document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[2]['score'];
+                                document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[3]['score'];
+                            }else if(obj.predict[2]['class'] == 'WHITE'){
+                                document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[2]['score'];
+                                document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[3]['score'];
+                            }
+                        }
+                        else if(obj.predict[1]['class'] == 'GREEN'){
+                            document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[1]['score'];
+                            if(obj.predict[2]['class'] == 'YELLOW'){   
+                                document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[2]['score']; 
+                                document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[3]['score'];
+                            }else if(obj.predict[2]['class'] == 'WHITE'){
+                                document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[2]['score'];
+                                document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[3]['score']; 
+                            }
+
+                        }
+                        else if(obj.predict[1]['class'] == 'WHITE'){//WHITE
+                            document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[1]['score'];
+                            if(obj.predict[2]['class'] == 'YELLOW'){  
+                                document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[2]['score'];
+                                document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[3]['score'];
+                            }else if(obj.predict[2]['class'] == 'GREEN'){
+                                document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[2]['score'];
+                                document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[3]['score'];
+                            }
                         }
                     }
+
+                    //YELLOW
                     else if(obj.predict[0]['class'] == 'YELLOW'){
                         document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[0]['score'];
                         if(obj.predict[1]['class'] == 'RED'){
                             document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[1]['score'];
+                            if(obj.predict[2]['class'] == 'GREEN'){
+                                document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[2]['score'];
+                                document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[3]['score'];
+                            }else if(obj.predict[2]['class'] == 'WHITE'){
+                                document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[2]['score'];
+                                document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[3]['score'];
+                            }
+                        }
+                        else if(obj.predict[1]['class'] == 'GREEN'){
+                            document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[1]['score'];
+                            if(obj.predict[2]['class'] == 'RED'){
+                                document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[2]['score'];
+                                document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[3]['score'];
+                            }else if(obj.predict[2]['class'] == 'WHITE'){
+                                document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[2]['score'];
+                                document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[3]['score'];
+                            }
+                        }
+                        else if(obj.predict[1]['class'] == 'WHITE'){
+                            document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[1]['score'];
+                            if(obj.predict[2]['class'] == 'RED'){
+                                document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[2]['score'];
+                                document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[3]['score'];
+                            }else if(obj.predict[2]['class'] == 'GREEN'){
+                                document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[2]['score'];
+                                document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[3]['score'];
+                            }
+                        }
+                    }
+                    
+                    //GREEN
+                    else if(obj.predict[0]['class'] == 'GREEN'){
+                        document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[0]['score'];
+                        if(obj.predict[1]['class'] == 'RED'){
+                            document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[1]['score'];
+                            if(obj.predict[2]['class'] == 'YELLOW'){
+                                document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[2]['score'];
+                                document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[3]['score'];
+                            }else if(obj.predict[2]['class'] == 'WHITE'){
+                                document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[2]['score'];
+                                document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[3]['score'];
+                            }
+                        }
+                        else if(obj.predict[1]['class'] == 'YELLOW'){
+                            document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[1]['score'];
+                            if(obj.predict[2]['class'] == 'RED'){
+                                document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[2]['score'];
+                                document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[3]['score'];
+                            }else if(obj.predict[2]['class'] == 'WHITE'){
+                                document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[2]['score'];
+                                document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[3]['score'];
+                            }
+                        }
+                        else if(obj.predict[1]['class'] == 'WHITE'){
+                            document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[1]['score'];
+                            if(obj.predict[2]['class'] == 'RED'){
+                                document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[2]['score'];
+                                document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[3]['score'];
+                            }else if(obj.predict[2]['class'] == 'YELLOW'){
+                                document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[2]['score'];
+                                document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[3]['score'];
+                            }
+                        }
+                    }
+
+                    //WHITE
+                    else if(obj.predict[0]['class'] == 'WHITE'){
+                        document.getElementById('white_predict').innerHTML = 'WHITE : '+obj.predict[0]['score'];
+                        if(obj.predict[1]['class'] == 'RED'){
+                            document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[1]['score'];
+                            if(obj.predict[2]['class'] == 'YELLOW'){
+                                document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[2]['score'];
+                                document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[3]['score'];
+                            }else if(obj.predict[2]['class'] == 'GREEN'){
+                                document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[2]['score'];
+                                document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[3]['score'];
+                            }
+                        }
+                        else if(obj.predict[1]['class'] == 'GREEN'){
+                            document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[1]['score'];
+                            if(obj.predict[2]['class'] == 'YELLOW'){
+                                document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[2]['score'];
+                                document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[3]['score'];
+                            }else if(obj.predict[2]['class'] == 'RED'){
+                                document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[2]['score'];
+                                document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[3]['score'];
+                            }
+                        }
+                        else if(obj.predict[1]['class'] == 'YELLOW'){
+                            document.getElementById('yellow_predict').innerHTML = 'YELLOW : '+obj.predict[1]['score'];
+                            if(obj.predict[2]['class'] == 'RED'){
+                                document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[2]['score'];
+                                document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[3]['score'];
+                            }else if(obj.predict[2]['class'] == 'GREEN'){
+                                document.getElementById('green_predict').innerHTML = 'GREEN : '+obj.predict[2]['score'];
+                                document.getElementById('red_predict').innerHTML = 'RED : '+obj.predict[3]['score'];
+                            }
                         }
                     }
                     
@@ -65,6 +196,8 @@
     <div id="imguri"></div>
     <p id="red_predict">RED</p>
     <p id="yellow_predict">YELLOW</p>
+    <p id="green_predict">GREEN</p>
+    <p id="white_predict">WHITE</p>
     <!--<button onclick="ajaxMoterOnOff(1)">Moter_ON</button>-->
 </body>
 </html>

@@ -1,13 +1,14 @@
 const mqtt = require("mqtt");
-const client =  mqtt.connect("mqtt://192.168.55.175");//서버 ip
+const client =  mqtt.connect("mqtt://server ip ");//서버 ip
 const express = require("express");                 //express 객체란 
 const app = express();
 const http = require("http");
 
+
 const TeachableMachine = require("@sashido/teachablemachine-node");
 
 const model = new TeachableMachine({
-  modelUrl: "https://teachablemachine.withgoogle.com/models/tXspLR78v/"
+  modelUrl: "https://teachablemachine.withgoogle.com/models/g-rF9h5l3/"
 });
   
 
@@ -16,7 +17,6 @@ const exp = require("constants");                   //???
 const devicesRouter = require("./routes/devices");
 const bodyParser = require("body-parser");
 
-var fs = require('fs');
 const { route } = require("./routes/devices");
 const router = require("./routes/devices");
 const res = require("express/lib/response");
@@ -34,29 +34,25 @@ app.use("/devices", devicesRouter);                 //routes/device.js 실행
 client.on("connect", ()=>{
     console.log("mqtt connect");                    //아두이노의 connect함수 핸들링
     client.subscribe("JPG");                      //모터라는 토픽을 subscribe로 구독함
+    client.subscribe("CLASSIFY");
 });
 
 //메세지 이벤트 즉 사용자가 어떤 메세지를 전달할때 처리하는 핸들러 
 //async()안의 첫번째 인자는 발행된 토픽을 선택한다.
 //async()두번째는 메세지의 값
 
-var obj = null;//이미지는 global variable로 설정해야 갱신이 됩니다
+var obj = null;         //이미지는 global variable로 설정해야 갱신이 됩니다
+var predictions = null; //분류된 값을 넣습니다.
+var CLASSIFIED = false;
 client.on("message", async(topic, message)=>{ // {"LED" : "ON"} or {"MOTER" : "ON"}
     if(topic == "JPG")
     {
         obj = message.toString();
-        /*app.get("/img", function(req,res,next){
-            res.set("content-Type", "text/json");
-            //res.send(JSON.stringify({data : obj}));
-            res.json({
-                data: obj || "no image yet"
-            });
-            //console.log(obj);//number 1 print
-        });*/
-        //console.log(obj);//number 2 print
     }
-    else{
+    else if(topic == "CLASSIFY"){
         obj = JSON.parse(message);  //뒤의 메세지만 parse 함수로 추출함
+        console.log(topic);
+        CLASSIFIED = true;
     }    
     /*var year = date.getFullYear();
     var month = date.getMonth();
@@ -67,12 +63,8 @@ client.on("message", async(topic, message)=>{ // {"LED" : "ON"} or {"MOTER" : "O
     obj.created_at = new Date(Date.UTC(year, month, today, hours, minutes, seconds));*/
 });
 
-var predictions = null;
 app.get("/img", function(req,res,next){
     res.set("content-Type", "text/json");
-    /*res.json({
-      data: obj || "no image yet"
-    });*/
     model.classify({
         imageUrl: obj,
       }).then((predictions) => {
@@ -80,6 +72,17 @@ app.get("/img", function(req,res,next){
         res.json({
             data : obj , predict : predictions || "no data yet"
         });
+        if(CLASSIFIED == true){
+            if((predictions[0]['score'] > 0.9) && (predictions[0]['class'] != 'WHITE'))
+            {   
+                client.publish("moter", "1");
+                console.log(predictions[0]['class']);
+                CLASSIFIED = false;
+            }
+            else if(predictions[0]['class'] = 'WHITE'){
+                CLASSIFIED = false;
+            }
+        }
       }).catch((e) => {
         console.log("ERROR", e);
       });

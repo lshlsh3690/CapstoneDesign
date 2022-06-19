@@ -47,7 +47,6 @@ public class BluetoothActivity extends AppCompatActivity {
     private ArrayList<String> deviceAddressArray;
     private BluetoothSocket btSocket = null;
     final static UUID BT_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    //final static UUID ESP32_cam_UUID = UUID.fromString("6E400002-B5A3-F393-E0A9-E50E24DCCA9E");
     //https://blog.naver.com/oh4zzang/40111957130 UUID 참고용
     //현재 소스코드는 아두이노 - 스마트폰의 연결을 위해 작성된것.
     //만약 스마트폰 - 스마트폰 블루투스 연결을 하려면
@@ -117,52 +116,13 @@ public class BluetoothActivity extends AppCompatActivity {
                 BTAdapter.startDiscovery();
                 Toast.makeText(getApplicationContext(), "Discovery started", Toast.LENGTH_SHORT).show();
                 registerReceiver(receiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
-                Toast.makeText(getApplicationContext(), "블루투스 검색 완료", Toast.LENGTH_SHORT).show();
             }
         }
-        /*if(BTAdapter.isDiscovering()){
-            BTAdapter.cancelDiscovery();
-        }else{
-            if(BTAdapter.isEnabled()){
-                btArrayAdapter.clear();
-                BTAdapter.startDiscovery();
-
-                if(deviceAddressArray != null && !deviceAddressArray.isEmpty()){
-                    deviceAddressArray.clear();
-                }
-                IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-                registerReceiver(receiver, filter);
-                Toast.makeText(getApplicationContext(), "Discovery started", Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(getApplicationContext(), "bluetooth not on", Toast.LENGTH_SHORT).show();
-            }
-        }*/
     }
 
     public void onClickButtonConnectWiFi(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        /*final EditText ID_text = new EditText(this);
-        final EditText PW_text = new EditText(this);
-
-        builder.setView(ID_text);
-        builder.setView(PW_text);
-        builder.setTitle("WiFi");
-
-        builder.setPositiveButton("확인",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(getApplicationContext(), "확인" , Toast.LENGTH_SHORT).show();
-                    }
-                });
-        builder.setNeutralButton("취소",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(getApplicationContext(), "취소" , Toast.LENGTH_SHORT).show();
-                    }
-                });*/
         LayoutInflater inflater = getLayoutInflater();
         View view1 = inflater.inflate(R.layout.dialog_login, null);
         builder.setView(view1);
@@ -241,7 +201,7 @@ public class BluetoothActivity extends AppCompatActivity {
             }
             if(flag)
             {
-                Toast.makeText(getBaseContext(), "연결합니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "소켓 생성 성공.", Toast.LENGTH_SHORT).show();
                 mConnectedThread = new ConnectedThread(btSocket);
                 mConnectedThread.start();
             }

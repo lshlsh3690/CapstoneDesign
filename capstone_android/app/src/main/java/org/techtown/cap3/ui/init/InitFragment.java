@@ -32,13 +32,17 @@ public class InitFragment extends Fragment {
         //binding = FragmentInitBinding.inflate(inflater, container, false);
         //View root = binding.getRoot();
         textView = rootview.findViewById(R.id.bluetooth);
-        Toast.makeText(getActivity(),"ㅇㅋ",Toast.LENGTH_SHORT).show();
         textView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 //Intent intent = new Intent(getActivity(), BluetoothActivity.class);
                 //startActivity(intent);
-                getContext().startActivity(new Intent(getContext(),BluetoothActivity.class));
+                try {
+                    getContext().startActivity(new Intent(getContext(),BluetoothActivity.class));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                //getContext().startActivity(new Intent(getContext(),BluetoothActivity.class));
             }
         });
 
