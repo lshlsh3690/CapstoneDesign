@@ -1,5 +1,5 @@
 const mqtt = require("mqtt");
-const client =  mqtt.connect("mqtt://server ip ");//서버 ip
+const client =  mqtt.connect("mqtt://192.168.55.175");//서버 ip
 const express = require("express");                 //express 객체란 
 const app = express();
 const http = require("http");
@@ -8,9 +8,20 @@ const http = require("http");
 const TeachableMachine = require("@sashido/teachablemachine-node");
 
 const model = new TeachableMachine({
-  modelUrl: "https://teachablemachine.withgoogle.com/models/g-rF9h5l3/"
+  modelUrl: "https://teachablemachine.withgoogle.com/models/sfuI_TAU-/"
 });
-  
+
+const admin = require('firebase-admin');
+
+let serviceAccount = require('./capstone-86d8f-firebase-adminsdk-l9w7g-8f0617e6d4.json');
+var target_token =
+    'des07xd6SGyztPqavwNkZt:APA91bGSamQroH69JTZJohJ0YECPivo98YNEeTrukjkzX-oU8pB2MV3_rxKH-4qnOY1_JziwthU-5xlBYfr1rti2Rzz3l6qy1lD0wnGDNVV3XKibNrWQFX4Wa1fu16qcW1I12RfLzhis'
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+});
+
+
 
 const exp = require("constants");                   //???
 
@@ -42,12 +53,72 @@ client.on("connect", ()=>{
 //async()두번째는 메세지의 값
 
 var obj = null;         //이미지는 global variable로 설정해야 갱신이 됩니다
-var predictions = null; //분류된 값을 넣습니다.
+ //분류된 값을 넣습니다.
 var CLASSIFIED = false;
 client.on("message", async(topic, message)=>{ // {"LED" : "ON"} or {"MOTER" : "ON"}
     if(topic == "JPG")
     {
         obj = message.toString();
+
+        model.classify({
+            imageUrl: obj,
+          }).then((predictions) => {
+            predictions;
+            if(CLASSIFIED == true){
+                
+                if((predictions[0]['score'] > 0.9) && (predictions[0]['class'] != 'WHITE'))
+                {   
+                    client.publish("moter", "1");
+                    console.log(predictions[0]['class']);
+                    if(predictions[0]['class'] == 'RED'){
+                        let message = {
+                            notification: {
+                            title: '혈변 감지',
+                            body: '수분이 필요해요',
+                            },
+                            token: target_token,
+                        }
+                        
+                        admin
+                            .messaging()
+                            .send(message)
+                            .then(function (response) {
+                            console.log('Successfully sent message: : ', response)
+                            })
+                            .catch(function (err) {
+                                console.log('Error Sending message!!! : ', err)
+                            });
+                    }
+                    else if(predictions[0]['class'] == 'GREEN'){
+                        let message = {
+                            notification: {
+                            title: '녹변 감지',
+                            body: '소화 불량입니다.',
+                            },
+                            token: target_token,
+                        }
+                        
+                        admin
+                            .messaging()
+                            .send(message)
+                            .then(function (response) {
+                            console.log('Successfully sent message: : ', response)
+                            })
+                            .catch(function (err) {
+                                console.log('Error Sending message!!! : ', err)
+                            });
+                    }
+                    CLASSIFIED = false;
+                }
+                else if(predictions[0]['class'] = 'WHITE'){
+                    CLASSIFIED = false;
+                }
+            }
+            
+        }).catch((e) => {
+            console.log("ERROR", e);
+        });
+        
     }
     else if(topic == "CLASSIFY"){
         obj = JSON.parse(message);  //뒤의 메세지만 parse 함수로 추출함
@@ -68,6 +139,7 @@ app.get("/img", function(req,res,next){
     model.classify({
         imageUrl: obj,
       }).then((predictions) => {
+        //console.log(obj);
         console.log("Predictions:", predictions);
         res.json({
             data : obj , predict : predictions || "no data yet"
@@ -89,6 +161,24 @@ app.get("/img", function(req,res,next){
     
     //console.log(obj);//number 1
 });
+
+let message = {
+    notification: {
+      title: '4조',
+      body: '스마트 배변 패드',
+    },
+    token: target_token,
+  }
+
+  admin
+    .messaging()
+    .send(message)
+    .then(function (response) {
+      console.log('Successfully sent message: : ', response)
+    })
+    .catch(function (err) {
+        console.log('Error Sending message!!! : ', err)
+    });
 
 
 app.set("port", "3000");                    //포트 지정

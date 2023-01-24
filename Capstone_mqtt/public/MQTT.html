@@ -14,7 +14,7 @@
         function ajaxMoterOnOff(value) {
             if (value == "1") var value = "on";
             $.ajax({
-                url: "http://server ip:3000/devices/moter",
+                url: "http://192.168.55.175:3000/devices/moter",
                 type: "post",
                 data : {"flag": value},
                 error : function(request,status,error){
@@ -26,7 +26,7 @@
         $(function() {
             timer = setInterval( function () {
             $.ajax({
-                url: "http://external ip:3000/img",
+                url: "http://211.37.54.49:3000/img",
                 type: "get",
                 context : this,
                 cache : false,

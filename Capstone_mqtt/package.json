@@ -12,6 +12,7 @@
   "dependencies": {
     "@sashido/teachablemachine-node": "^1.2.2",
     "express": "^4.18.1",
+    "firebase": "^9.8.3",
     "firebase-admin": "^11.0.0",
     "mqtt": "^4.3.7",
     "node-rtsp-stream": "^0.0.9"
